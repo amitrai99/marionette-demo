@@ -51,7 +51,10 @@
       //Create a collection
       ContactManager.ContactCollection = Backbone.Collection.extend({
         model: ContactManager.Contact,
-        comparator: 'firstName'
+        comparator: function(m1, m2) {
+          //we sort by firstName and then lastName
+          return m1.get('firstName') === m2.get('firstName') ? m1.get('lastName') > m2.get('lastName') : m1.get('firstName') > m2.get('firstName');
+        }
       });
 
       //create item view
@@ -95,17 +98,17 @@
           var contactCollection = new ContactManager.ContactCollection([
               {
                 firstName: 'Alice',
-                lastName: 'Arten',
+                lastName: 'yyy',
                 phoneNumber: '511-111-1111'
               },
               {
-                firstName: 'Zum',
-                lastName: 'Zum',
+                firstName: 'Alice',
+                lastName: 'zzz',
                 phoneNumber: '898-144-1111'
               },
               {
-                firstName: 'Num',
-                lastName: 'Num',
+                firstName: 'Alice',
+                lastName: 'xxx',
                 phoneNumber: '909-333-1111'
               }
           ]);
