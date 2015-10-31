@@ -30,13 +30,23 @@
     <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="./bower_components/requirejs/require.js"></script>
 
-    <script type="text/template" id="static-template">
-      <p>This is text that was rendered by our Marionette app</p>
+    <script type="text/template" id="contact-template">
+      <p><%- firstName %> <%- lastName %></p>
     </script>
 
     <script>
+
       //create the Application instance
       var ContactManager = new Marionette.Application();
+
+      //Create a Model
+      ContactManager.Contact = Backbone.Model.extend({
+        defaults: {
+          firstName: '',
+          lastName: '',
+          phoneNumber: ''
+        }
+      });
 
       //init layout and regions before the app starts
       ContactManager.on( 'before:start', function() {
@@ -53,17 +63,30 @@
       } );
 
       //create static view
-      ContactManager.StaticView = Marionette.ItemView.extend({
-        template: '#static-template'
+      ContactManager.ContactView = Marionette.ItemView.extend({
+        template: '#contact-template',
+        events: {
+          'click p': 'alertPhoneNumber'
+        },
+        alertPhoneNumber: function(e) {
+          alert( this.model.escape('phoneNumber') || 'No phone number!'  );
+        }
       });
 
       //now populate the layout with real views
       ContactManager.on("start", function() {
           console.log( 'Application started ');
+          //insert data in model
+          var alice = new ContactManager.Contact({
+            firstName: 'Alice',
+            lastName: 'Arten'
+          });
           //create a view
-          var staticView = new ContactManager.StaticView();
+          var aliceView = new ContactManager.ContactView({
+            model: alice
+          });
           //attach it to app regions
-          ContactManager.regions.main.show(staticView);
+          ContactManager.regions.main.show(aliceView);
       });
 
       ContactManager.start();
