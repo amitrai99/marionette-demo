@@ -17,10 +17,11 @@
       </div>
     </div>
 
-    <div class="container">
-      <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+    <div id="app-container">
+      <div id="main-region" class="container">
+        <p>Here is static content in the web page. You'll notice that it gets replaced by our app as soon as we start it.</p>
+      </div>
     </div>
-
 
     <script src="./bower_components/underscore/underscore-min.js"></script>
     <script src="./bower_components/jquery/dist/jquery.js"></script>
@@ -28,5 +29,46 @@
     <script src="./bower_components/backbone.marionette/lib/backbone.marionette.js"></script>
     <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="./bower_components/requirejs/require.js"></script>
+
+    <script type="text/template" id="static-template">
+      <p>This is text that was rendered by our Marionette app</p>
+    </script>
+
+    <script>
+      //create the Application instance
+      var ContactManager = new Marionette.Application();
+
+      //init layout and regions before the app starts
+      ContactManager.on( 'before:start', function() {
+
+        var RegionContainer = Marionette.LayoutView.extend({
+          el: '#app-container',
+          regions: {
+            main: '#main-region'
+          }
+        });
+        //insert regions in layout
+        ContactManager.regions = new RegionContainer();
+
+      } );
+
+      //create static view
+      ContactManager.StaticView = Marionette.ItemView.extend({
+        template: '#static-template'
+      });
+
+      //now populate the layout with real views
+      ContactManager.on("start", function() {
+          console.log( 'Application started ');
+          //create a view
+          var staticView = new ContactManager.StaticView();
+          //attach it to app regions
+          ContactManager.regions.main.show(staticView);
+      });
+
+      ContactManager.start();
+    </script>
+
+
   </body>
 </html>
