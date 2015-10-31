@@ -30,8 +30,8 @@
     <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="./bower_components/requirejs/require.js"></script>
 
-    <script type="text/template" id="contact-template">
-      <p><%- firstName %> <%- lastName %></p>
+    <script type="text/template" id="contact-list-item">
+      <%- firstName %> <%- lastName %>
     </script>
 
     <script>
@@ -48,6 +48,30 @@
         }
       });
 
+      //Create a collection
+      ContactManager.ContactCollection = Backbone.Collection.extend({
+        model: ContactManager.Contact,
+        comparator: 'firstName'
+      });
+
+      //create item view
+      ContactManager.ContactItemView = Marionette.ItemView.extend({
+        tagName: 'li',
+        template: '#contact-list-item',
+        events: {
+          'click': 'alertPhoneNumber'
+        },
+        alertPhoneNumber: function(e) {
+          alert( this.model.escape('phoneNumber') || 'No phone number!'  );
+        }
+      });
+
+      //create collectionView
+      ContactManager.ContactsView = Marionette.CollectionView.extend({
+        tagName: 'ul',
+        childView: ContactManager.ContactItemView
+      });
+
       //init layout and regions before the app starts
       ContactManager.on( 'before:start', function() {
 
@@ -62,31 +86,37 @@
 
       } );
 
-      //create static view
-      ContactManager.ContactView = Marionette.ItemView.extend({
-        template: '#contact-template',
-        events: {
-          'click p': 'alertPhoneNumber'
-        },
-        alertPhoneNumber: function(e) {
-          alert( this.model.escape('phoneNumber') || 'No phone number!'  );
-        }
-      });
-
       //now populate the layout with real views
       ContactManager.on("start", function() {
           console.log( 'Application started ');
-          //insert data in model
-          var alice = new ContactManager.Contact({
-            firstName: 'Alice',
-            lastName: 'Arten'
+
+          //create collection
+          //note that models are automatically created by Backbone
+          var contactCollection = new ContactManager.ContactCollection([
+              {
+                firstName: 'Alice',
+                lastName: 'Arten',
+                phoneNumber: '511-111-1111'
+              },
+              {
+                firstName: 'Zum',
+                lastName: 'Zum',
+                phoneNumber: '898-144-1111'
+              },
+              {
+                firstName: 'Num',
+                lastName: 'Num',
+                phoneNumber: '909-333-1111'
+              }
+          ]);
+
+          //create collection view
+          var contactsView = new ContactManager.ContactsView({
+            collection: contactCollection
           });
-          //create a view
-          var aliceView = new ContactManager.ContactView({
-            model: alice
-          });
+
           //attach it to app regions
-          ContactManager.regions.main.show(aliceView);
+          ContactManager.regions.main.show(contactsView);
       });
 
       ContactManager.start();
