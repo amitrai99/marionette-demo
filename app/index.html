@@ -29,99 +29,25 @@
     <script src="./bower_components/backbone.marionette/lib/backbone.marionette.js"></script>
     <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="./bower_components/requirejs/require.js"></script>
+    <script src="./assets/js/app.js"></script>
+    <script src="./assets/js/entities/contact.js"></script>
+    <script src="./assets/js/apps/contacts/list/list_view.js"></script>
+    <script src="./assets/js/apps/contacts/list/list_controller.js"></script>
 
     <script type="text/template" id="contact-list-item">
-      <%- firstName %> <%- lastName %>
+      <td><%- firstName %></td><td><%- lastName %></td>
+    </script>
+
+    <script type="text/template" id="contact-list">
+      <thead>
+        <tr>
+          <th>First name</th><th>Last name</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
     </script>
 
     <script>
-
-      //create the Application instance
-      var ContactManager = new Marionette.Application();
-
-      //Create a Model
-      ContactManager.Contact = Backbone.Model.extend({
-        defaults: {
-          firstName: '',
-          lastName: '',
-          phoneNumber: ''
-        }
-      });
-
-      //Create a collection
-      ContactManager.ContactCollection = Backbone.Collection.extend({
-        model: ContactManager.Contact,
-        comparator: function(m1, m2) {
-          //we sort by firstName and then lastName
-          return m1.get('firstName') === m2.get('firstName') ? m1.get('lastName') > m2.get('lastName') : m1.get('firstName') > m2.get('firstName');
-        }
-      });
-
-      //create item view
-      ContactManager.ContactItemView = Marionette.ItemView.extend({
-        tagName: 'li',
-        template: '#contact-list-item',
-        events: {
-          'click': 'alertPhoneNumber'
-        },
-        alertPhoneNumber: function(e) {
-          alert( this.model.escape('phoneNumber') || 'No phone number!'  );
-        }
-      });
-
-      //create collectionView
-      ContactManager.ContactsView = Marionette.CollectionView.extend({
-        tagName: 'ul',
-        childView: ContactManager.ContactItemView
-      });
-
-      //init layout and regions before the app starts
-      ContactManager.on( 'before:start', function() {
-
-        var RegionContainer = Marionette.LayoutView.extend({
-          el: '#app-container',
-          regions: {
-            main: '#main-region'
-          }
-        });
-        //insert regions in layout
-        ContactManager.regions = new RegionContainer();
-
-      } );
-
-      //now populate the layout with real views
-      ContactManager.on("start", function() {
-          console.log( 'Application started ');
-
-          //create collection
-          //note that models are automatically created by Backbone
-          var contactCollection = new ContactManager.ContactCollection([
-              {
-                firstName: 'Alice',
-                lastName: 'yyy',
-                phoneNumber: '511-111-1111'
-              },
-              {
-                firstName: 'Alice',
-                lastName: 'zzz',
-                phoneNumber: '898-144-1111'
-              },
-              {
-                firstName: 'Alice',
-                lastName: 'xxx',
-                phoneNumber: '909-333-1111'
-              }
-          ]);
-
-          //create collection view
-          var contactsView = new ContactManager.ContactsView({
-            collection: contactCollection
-          });
-
-          //attach it to app regions
-          ContactManager.regions.main.show(contactsView);
-      });
-
       ContactManager.start();
     </script>
 
