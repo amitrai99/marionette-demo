@@ -14,6 +14,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
     },
     highlightName: function(e) {
       this.$el.toggleClass('warning');
+      this.trigger('contact:highlight', this.model );
     },
     showContent: function(e) {
       var content = $(e.target).text();
@@ -38,7 +39,14 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
     className: 'table table-hover',
     template: '#contact-list',
     childView: List.Contact,
-    childViewContainer: "tbody"
+    childViewContainer: "tbody",
+    onChildviewContactDelete: function(a,b) {
+      console.log(a);
+      console.log(b);
+      this.$el.fadeOut(1000, function() {
+        $(this).fadeIn(1000);
+      });
+    }
   });
 
 });
