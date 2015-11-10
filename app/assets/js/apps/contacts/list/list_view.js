@@ -5,10 +5,30 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
     tagName: 'tr',
     template: '#contact-list-item',
     events: {
-      'click': 'alertPhoneNumber'
+      'click': 'highlightName',
+      'click td': 'showContent',
+      'click .btn.js-delete': 'deleteClicked'
     },
     alertPhoneNumber: function(e) {
       alert( this.model.escape('phoneNumber') || 'No phone number!'  );
+    },
+    highlightName: function(e) {
+      this.$el.toggleClass('warning');
+    },
+    showContent: function(e) {
+      var content = $(e.target).text();
+      alert(content);
+    },
+    deleteClicked: function(e) {
+      e.stopPropagation();
+      this.trigger('contact:delete', this.model);
+      //this.model.collection.remove(this.model);
+    },
+    remove: function() {
+      var self = this;
+      this.$el.fadeOut( function() {
+        Marionette.ItemView.prototype.remove.call(self);
+      } );
     }
   });
 
